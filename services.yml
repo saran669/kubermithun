@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: saran-deploy
+    labels:
+      app: saran-app
+
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: saran-app
+
+  template:
+    metadata:
+      name: saran-app
+      labels:
+        app: saran-app
+
+    spec:
+      containers:
+        - name: saran-container
+          image: nageshvkn/gamutkart-img
+          ports:
+          - containerPort: 8080
+          command: ["/bin/sh"]
+          args:  ["-c", "/root/apache-tomcat-8.5.38/bin/startup.sh; while true; do sleep 1; done;"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: saran-service
+    labels:
+      app: saran-app
+
+spec:
+  selector:
+    app: saran-app
+  type: NodePort
+  ports:
+  - nodePort: 31000
+    port: 8080
+    targetPort: 8080
